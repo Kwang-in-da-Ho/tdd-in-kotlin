@@ -37,4 +37,12 @@ class CalculatorTest {
         assertEquals(195, calculator.add("19,29,39,49,59"))
         assertNotEquals(10,calculator.add("123,454,123,55"))
     }
+
+    @Test
+    fun shouldReturnSum_whenDelimiterIsCommaOrNewline() {
+        val calculator = Calculator()
+        assertEquals(15, calculator.add("1,2\n3,4\n5"))
+        assertEquals(150, calculator.add("10\n20\n30\n40\n50"))
+        assertNotEquals(10,calculator.add("12\n45,23\n55"))
+    }
 }
