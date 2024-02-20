@@ -21,4 +21,20 @@ class CalculatorTest {
         assertEquals(999, calculator.add("999"))
         assertNotEquals(0, calculator.add("1"))
     }
+
+    @Test
+    fun shouldReturnSum_whenExpressionHasTwoNumbersSeparatedByComma() {
+        val calculator = Calculator()
+        assertEquals(3, calculator.add("1,2"))
+        assertEquals(30, calculator.add("12,18"))
+        assertNotEquals(0, calculator.add("1,2"))
+    }
+
+    @Test
+    fun shouldReturnSum_whenExpressionHasMoreThanTwoNumbersSeparatedByComma() {
+        val calculator = Calculator()
+        assertEquals(10, calculator.add("1,2,3,4"))
+        assertEquals(195, calculator.add("19,29,39,49,59"))
+        assertNotEquals(10,calculator.add("123,454,123,55"))
+    }
 }
