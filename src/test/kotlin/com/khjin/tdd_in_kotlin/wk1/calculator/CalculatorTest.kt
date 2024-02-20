@@ -1,7 +1,9 @@
 package com.khjin.tdd_in_kotlin.wk1.calculator
 
 import org.example.com.khjin.tdd_in_kotlin.wk1.calculator.Calculator
+import org.example.com.khjin.tdd_in_kotlin.wk1.exception.InvalidExpressionException
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -44,5 +46,16 @@ class CalculatorTest {
         assertEquals(15, calculator.add("1,2\n3,4\n5"))
         assertEquals(150, calculator.add("10\n20\n30\n40\n50"))
         assertNotEquals(10,calculator.add("12\n45,23\n55"))
+    }
+
+    @Test
+    fun shouldThrowInvalidExpressionException_whenExpressionEndsWithDelimiter() {
+        val calculator = Calculator()
+        assertThrows<InvalidExpressionException>{
+            calculator.add("1,2,4,")
+        }
+        assertThrows<InvalidExpressionException>{
+            calculator.add("4\n5,6\n")
+        }
     }
 }
