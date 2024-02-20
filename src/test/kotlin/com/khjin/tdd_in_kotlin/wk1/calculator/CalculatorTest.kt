@@ -28,9 +28,6 @@ class CalculatorTest {
         val calculator = Calculator()
         assertEquals(listOf(1,2,3), calculator.parse("1,2,3"))
         assertEquals(listOf(123,456,789,1,2,3), calculator.parse("123,456,789,1,2,3"))
-        Assertions.assertThrows(IllegalArgumentException::class.java) {
-            calculator.parse("1\\2\\3")
-        }
     }
 
     @Test
@@ -44,12 +41,25 @@ class CalculatorTest {
     }
 
     @Test
-    fun shouldParseToNumberList_whenDelimterIsCommaOrNewline() {
+    fun shouldParseToNumberList_whenDelimiterIsCommaOrNewline() {
         val calculator = Calculator()
         assertEquals(listOf(1,2,3), calculator.parse("1,2\n3"))
+
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentException_whenDelimiterIsNotCommaOrNewLine() {
+        val calculator = Calculator()
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            calculator.parse("1\\2\\3")
+        }
+    }
+
+    @Test
+    fun shouldThrowIllegalArgumentException_whenExpressionHasConsecutiveDelimiters() {
+        val calculator = Calculator()
         Assertions.assertThrows(IllegalArgumentException::class.java) {
             calculator.parse("1,2,\n3")
         }
-
     }
 }
