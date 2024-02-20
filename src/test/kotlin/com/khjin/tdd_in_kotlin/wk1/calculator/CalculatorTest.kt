@@ -60,9 +60,17 @@ class CalculatorTest {
     }
 
     @Test
-    fun shouldReturnChangedDelimiter_when () {
+    fun shouldReturnChangedDelimiter_whenExpressionStartsWithNewDelimiter () {
         val calculator = Calculator()
         assertEquals("|", calculator.extractDelimiter("//|\n1|2|3"))
         assertEquals("delimiter", calculator.extractDelimiter("//delimiter\n10delimiter20"))
+    }
+
+    @Test
+    fun shouldReturnSum_whenDelimiterIsChanged() {
+        val calculator = Calculator()
+        assertEquals(6, calculator.add("//|\n1|2|3"))
+        assertEquals(30, calculator.add("//delimiter\n10delimiter20"))
+        assertNotEquals(10, calculator.add("//;\n4;5;6"))
     }
 }

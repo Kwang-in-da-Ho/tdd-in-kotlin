@@ -11,9 +11,11 @@ class Calculator {
             return 0
         }else if( !isNumeric(expression) ){
 
-            if(expression.startsWith(delimiterPrefix)){
+            if(expression.startsWith(delimiterPrefix)) {
+                val delimiter = extractDelimiter(expression)
+                val newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
+                return newExpression.split(delimiter).sumOf { n -> n.toInt() }
 
-                //TODO: extract demliter and use it to parse expression
             }
 
             if(expression.last() == ',' || expression.last() == '\n'){
@@ -22,6 +24,8 @@ class Calculator {
 
             val numList = expression.split(",", "\n")
             return numList.sumOf { n -> n.toInt() }
+
+
         }else{
             return expression.toInt()
         }
