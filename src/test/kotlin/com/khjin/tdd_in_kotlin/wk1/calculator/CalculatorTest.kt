@@ -62,4 +62,16 @@ class CalculatorTest {
             calculator.parse("1,2,\n3")
         }
     }
+
+    @Test
+    fun shouldThrowIllegalArgumentException_whenExpressionEndsWithDelimiter() {
+        val calculator = Calculator()
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            calculator.parse("1,2,3,")
+        }
+        Assertions.assertThrows(IllegalArgumentException::class.java) {
+            calculator.parse("1\n2,3\n")
+        }
+    }
+
 }

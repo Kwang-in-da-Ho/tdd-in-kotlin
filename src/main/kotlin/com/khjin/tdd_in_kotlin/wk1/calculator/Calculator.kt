@@ -54,6 +54,10 @@ class Calculator {
         val defaultDelimiter = arrayOf(',', '\n')
         var numInString = ""
         var isValid = true
+
+        if( expression.isEmpty() or !expression.last().isDigit() )
+            throw IllegalArgumentException("Invalid Expression");
+
         for(c in expression.toCharArray()){
             if( defaultDelimiter.contains(c) ){
                 if( numInString.isNotEmpty() ){
@@ -75,8 +79,6 @@ class Calculator {
         if( numInString.isNotEmpty() ) result.add(numInString.toInt())
 
         return result
-
-
     }
 
 }
