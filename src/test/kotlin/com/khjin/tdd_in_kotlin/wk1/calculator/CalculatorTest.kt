@@ -58,4 +58,11 @@ class CalculatorTest {
             calculator.add("4\n5,6\n")
         }
     }
+
+    @Test
+    fun shouldReturnChangedDelimiter_when () {
+        val calculator = Calculator()
+        assertEquals("|", calculator.extractDelimiter("//|\n1|2|3"))
+        assertEquals("delimiter", calculator.extractDelimiter("//delimiter\n10delimiter20"))
+    }
 }

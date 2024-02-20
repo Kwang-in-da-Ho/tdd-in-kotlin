@@ -4,10 +4,17 @@ import org.example.com.khjin.tdd_in_kotlin.wk1.exception.InvalidExpressionExcept
 
 class Calculator {
 
+    private val delimiterPrefix = "//"
+
     fun add(expression: String): Int{
         if(expression.isEmpty()){
             return 0
-        }else if(expression.contains(",") || expression.contains("\n")){
+        }else if( !isNumeric(expression) ){
+
+            if(expression.startsWith(delimiterPrefix)){
+
+                //TODO: extract demliter and use it to parse expression
+            }
 
             if(expression.last() == ',' || expression.last() == '\n'){
                 throw InvalidExpressionException("Expression should not end with delimiters")
@@ -18,6 +25,21 @@ class Calculator {
         }else{
             return expression.toInt()
         }
+    }
+
+    private fun isNumeric(str : String): Boolean {
+        return str.toIntOrNull() != null
+    }
+
+    fun extractDelimiter(expression: String): String{
+        var delimiterEndIdx = 2
+        for( i in delimiterPrefix.length until expression.length ){
+            if( expression[i].isDigit() ){
+                delimiterEndIdx = i-1
+                break
+            }
+        }
+        return expression.substring(delimiterPrefix.length, delimiterEndIdx)
     }
 
 }
