@@ -91,4 +91,40 @@ class CalculatorTest {
             }
         )
     }
+
+    @Test
+    fun shouldThrowInvalidExpression_whenNumberIsNegative() {
+        val calculator = Calculator()
+
+        assertFailsWith<InvalidExpressionException>(
+            message = "Negative number(s) not allowed: -2"
+            , block = {
+                calculator.add("1,-2")
+            }
+        )
+        assertFailsWith<InvalidExpressionException>(
+            message = "Negative number(s) not allowed: -4,-9"
+            , block = {
+                calculator.add("2,-4,-9")
+            }
+        )
+        assertFailsWith<InvalidExpressionException>(
+            message = "Negative number(s) not allowed: -4,-9"
+            , block = {
+                calculator.add("//sep\n2sep-4sep-9")
+            }
+        )
+    }
+
+    @Test
+    fun shouldShowAllErrorMessages_whenTwoOrMoreErrorsOccur() {
+        val calculator = Calculator()
+
+        assertFailsWith<InvalidExpressionException>(
+            message = "Negative number(s) not allowed: -3\n'|' expected but ',' found at position 3"
+            , block = {
+                calculator.add("//sep\n2sep-4sep-9")
+            }
+        )
+    }
 }

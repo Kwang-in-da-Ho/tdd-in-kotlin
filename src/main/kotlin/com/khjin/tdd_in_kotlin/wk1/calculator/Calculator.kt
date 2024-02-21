@@ -7,64 +7,103 @@ class Calculator {
     private val delimiterPrefix = "//"
 
     fun add(expression: String): Int{
-        if(expression.isEmpty()){
+
+        if(expression.isEmpty()){   //empty string
             return 0
 
-        }else if( !isNumeric(expression) ){
+        }else if( isNumeric(expression) ){ //one number
+            return expression.toInt()
 
-            if (expression.startsWith(delimiterPrefix) ) {
+        }else{ //expression
+
+            var sum = 0
+            val exceptionMessageBuilder = StringBuilder()
+            val invalidDelimiter = StringBuilder()
+            var invalidDelimiterPos = 0
+            val negativeNums = arrayListOf<Int>()
+            val validDelimiters = arrayListOf<String>()
+
+            if (expression.startsWith(delimiterPrefix) ) { // delimiter change
                 val delimiter = extractDelimiter(expression)
+                validDelimiters.add(delimiter)
                 val newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
 
-                if( newExpression.substring(newExpression.length - delimiter.length, newExpression.length) == delimiter) {
+                val numList = newExpression.split(delimiter)
+                // if last elemet of numList is an empty string, then the last part of the expression is the delimiter
+
+                if(numList.last().isEmpty()) {
                     throw InvalidExpressionException("Expression should not end with delimiters")
                 }
 
-                // check if other delimiter is included
-                val numList = newExpression.split(delimiter)
-                var sum = 0
                 for(i in numList.indices){
-                    val messageBuilder = StringBuilder()
-                    if( !isNumeric(numList[i]) ){
-                        // get position of invalid delimiter
-                        var pos = 0
-                        val invalidDelimiter = StringBuilder()
 
+                    if( isNumeric(numList[i] )){
+                        val num = numList[i].toInt()
+                        if(num < 0){
+                            negativeNums.add(num)
+                        }
+                        sum += num
+
+                    }else { // check if other delimiter is included
+
+                        // get position of invalid delimiter
                         for(prev in 0 until i){
-                            pos += numList[prev].length
+                            invalidDelimiterPos += numList[prev].length
                         }
 
+                        // extract invalid Delimiter
                         var foundInvalid = false
                         for(c in numList[i].toCharArray().indices){
                             if( !numList[i][c].isDigit() ){
                                 if( !foundInvalid ) foundInvalid = true
-                                pos++
+                                invalidDelimiterPos++
                                 invalidDelimiter.append(numList[i][c])
                             }else{
                                 if(foundInvalid) break
                             }
                         }
-                        messageBuilder.append("'").append(delimiter).append("' expected but '")
-                            .append(invalidDelimiter.toString()).append("' found at position ").append(pos)
-                        throw InvalidExpressionException(messageBuilder.toString())
-                    }
-                    else {
-                        sum += numList[i].toInt()
                     }
                 }
 
-                return sum
+            }else{ // default delimiter
+
+                val numList = expression.split(",", "\n")
+
+                if(numList.last().isEmpty()) {
+                    throw InvalidExpressionException("Expression should not end with delimiters")
+                }
+
+                for(i in numList.indices){
+                    val num = numList[i].toInt()
+                    if(num < 0){
+                        negativeNums.add(num)
+                    }
+                    sum += num
+                }
+
             }
 
-            if(expression.last() == ',' || expression.last() == '\n'){
-                throw InvalidExpressionException("Expression should not end with delimiters")
+            if(negativeNums.isNotEmpty()){
+                // build exception message
+                exceptionMessageBuilder.append("Negative number(s) not allowed : ")
+                    .append(negativeNums.joinToString(", "))
             }
 
-            val numList = expression.split(",", "\n")
-            return numList.sumOf { n -> n.toInt() }
+            if(invalidDelimiter.isNotEmpty()){
+                if(exceptionMessageBuilder.isNotEmpty()){
+                    exceptionMessageBuilder.append("\n")
+                }
+                exceptionMessageBuilder
+                    .append("'").append(validDelimiters[0]).append("' expected but '")
+                    .append(invalidDelimiter.toString()).append("' found at position ").append(invalidDelimiterPos)
+            }
 
-        }else{
-            return expression.toInt()
+            if( exceptionMessageBuilder.isNotEmpty() ){
+                println(exceptionMessageBuilder.toString())
+                throw InvalidExpressionException(exceptionMessageBuilder.toString())
+            }
+
+            return sum
         }
     }
 
