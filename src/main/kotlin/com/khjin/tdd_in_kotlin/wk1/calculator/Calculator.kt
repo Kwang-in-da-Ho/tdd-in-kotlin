@@ -17,70 +17,58 @@ class Calculator {
         }else{ //expression
 
             var sum = 0
+            var newExpression = expression
+
             val exceptionMessageBuilder = StringBuilder()
             val invalidDelimiter = StringBuilder()
             var invalidDelimiterPos = 0
             val negativeNums = arrayListOf<Int>()
             val validDelimiters = arrayListOf<String>()
 
+
             if (expression.startsWith(delimiterPrefix) ) { // delimiter change
                 val delimiter = extractDelimiter(expression)
                 validDelimiters.add(delimiter)
-                val newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
-
-                val numList = newExpression.split(delimiter)
-                // if last elemet of numList is an empty string, then the last part of the expression is the delimiter
-
-                if(numList.last().isEmpty()) {
-                    throw InvalidExpressionException("Expression should not end with delimiters")
-                }
-
-                for(i in numList.indices){
-
-                    if( isNumeric(numList[i] )){
-                        val num = numList[i].toInt()
-                        if(num < 0){
-                            negativeNums.add(num)
-                        }
-                        sum += num
-
-                    }else { // check if other delimiter is included
-
-                        // get position of invalid delimiter
-                        for(prev in 0 until i){
-                            invalidDelimiterPos += numList[prev].length
-                        }
-
-                        // extract invalid Delimiter
-                        var foundInvalid = false
-                        for(c in numList[i].toCharArray().indices){
-                            if( !numList[i][c].isDigit() ){
-                                if( !foundInvalid ) foundInvalid = true
-                                invalidDelimiterPos++
-                                invalidDelimiter.append(numList[i][c])
-                            }else{
-                                if(foundInvalid) break
-                            }
-                        }
-                    }
-                }
-
+                newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
             }else{ // default delimiter
+                validDelimiters.addAll(listOf(",", "\n"))
+            }
 
-                val numList = expression.split(",", "\n")
+            val numList = newExpression.split(*validDelimiters.toTypedArray())
 
-                if(numList.last().isEmpty()) {
-                    throw InvalidExpressionException("Expression should not end with delimiters")
-                }
+            // if last element of numList is an empty string, then the last part of the expression is the delimiter
+            if(numList.last().isEmpty()) {
+                throw InvalidExpressionException("Expression should not end with delimiters")
+            }
 
-                for(i in numList.indices){
+            for(i in numList.indices){
+
+                if( isNumeric(numList[i] )){
                     val num = numList[i].toInt()
-                    if(num < 0){
+                    if(num < 0){ //negative number
                         negativeNums.add(num)
                     }
                     sum += num
-                }
 
+                }else { // check if other delimiter is included
+
+                    // get position of invalid delimiter
+                    for(prev in 0 until i){
+                        invalidDelimiterPos += numList[prev].length
+                    }
+
+                    // extract invalid Delimiter
+                    var foundInvalid = false
+                    for(c in numList[i].toCharArray().indices){
+                        if( !numList[i][c].isDigit() ){
+                            if( !foundInvalid ) foundInvalid = true
+                            invalidDelimiterPos++
+                            invalidDelimiter.append(numList[i][c])
+                        }else{
+                            if(foundInvalid) break
+                        }
+                    }
+                }
             }
 
             if(negativeNums.isNotEmpty()){
@@ -99,7 +87,6 @@ class Calculator {
             }
 
             if( exceptionMessageBuilder.isNotEmpty() ){
-                println(exceptionMessageBuilder.toString())
                 throw InvalidExpressionException(exceptionMessageBuilder.toString())
             }
 
