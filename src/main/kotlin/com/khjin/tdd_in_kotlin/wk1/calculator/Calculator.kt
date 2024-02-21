@@ -9,13 +9,51 @@ class Calculator {
     fun add(expression: String): Int{
         if(expression.isEmpty()){
             return 0
+
         }else if( !isNumeric(expression) ){
 
-            if(expression.startsWith(delimiterPrefix)) {
+            if (expression.startsWith(delimiterPrefix) ) {
                 val delimiter = extractDelimiter(expression)
                 val newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
-                return newExpression.split(delimiter).sumOf { n -> n.toInt() }
 
+                if( newExpression.substring(newExpression.length - delimiter.length, newExpression.length) == delimiter) {
+                    throw InvalidExpressionException("Expression should not end with delimiters")
+                }
+
+                // check if other delimiter is included
+                val numList = newExpression.split(delimiter)
+                var sum = 0
+                for(i in numList.indices){
+                    val messageBuilder = StringBuilder()
+                    if( !isNumeric(numList[i]) ){
+                        // get position of invalid delimiter
+                        var pos = 0
+                        val invalidDelimiter = StringBuilder()
+
+                        for(prev in 0 until i){
+                            pos += numList[prev].length
+                        }
+
+                        var foundInvalid = false
+                        for(c in numList[i].toCharArray().indices){
+                            if( !numList[i][c].isDigit() ){
+                                if( !foundInvalid ) foundInvalid = true
+                                pos++
+                                invalidDelimiter.append(numList[i][c])
+                            }else{
+                                if(foundInvalid) break
+                            }
+                        }
+                        messageBuilder.append("'").append(delimiter).append("' expected but '")
+                            .append(invalidDelimiter.toString()).append("' found at position ").append(pos)
+                        throw InvalidExpressionException(messageBuilder.toString())
+                    }
+                    else {
+                        sum += numList[i].toInt()
+                    }
+                }
+
+                return sum
             }
 
             if(expression.last() == ',' || expression.last() == '\n'){
@@ -24,7 +62,6 @@ class Calculator {
 
             val numList = expression.split(",", "\n")
             return numList.sumOf { n -> n.toInt() }
-
 
         }else{
             return expression.toInt()

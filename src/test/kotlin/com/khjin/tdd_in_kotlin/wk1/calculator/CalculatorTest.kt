@@ -5,6 +5,7 @@ import org.example.com.khjin.tdd_in_kotlin.wk1.exception.InvalidExpressionExcept
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 
 class CalculatorTest {
@@ -72,5 +73,22 @@ class CalculatorTest {
         assertEquals(6, calculator.add("//|\n1|2|3"))
         assertEquals(30, calculator.add("//delimiter\n10delimiter20"))
         assertNotEquals(10, calculator.add("//;\n4;5;6"))
+    }
+
+    @Test
+    fun shouldThrowInvalidExpressionException_whenUnknownDelimiterIsUsed() {
+        val calculator = Calculator()
+        assertFailsWith<InvalidExpressionException>(
+            message = "'|' expected but ',' found at position 3"
+            , block = {
+                calculator.add("//|\n1|2,3")
+            }
+        )
+        assertFailsWith<InvalidExpressionException>(
+            message = "'sep' expected but 'aaa' found at position 12"
+            , block = {
+                calculator.add("//sep\n10sep20sep30aaa40sep50")
+            }
+        )
     }
 }
