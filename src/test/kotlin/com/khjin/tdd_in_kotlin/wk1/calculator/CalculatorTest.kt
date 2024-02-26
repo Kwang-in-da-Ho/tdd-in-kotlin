@@ -127,4 +127,11 @@ class CalculatorTest {
             }
         )
     }
+
+    @Test
+    fun shouldNotAdd_whenNumberIsLargerThan1000() {
+        val calculator = Calculator()
+        assertEquals(6, calculator.add("//|\n1|1234|5678|2|3"))
+
+    }
 }

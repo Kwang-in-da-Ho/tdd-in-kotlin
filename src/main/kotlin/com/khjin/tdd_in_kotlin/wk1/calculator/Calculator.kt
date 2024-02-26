@@ -25,18 +25,18 @@ class Calculator {
             val negativeNums = arrayListOf<Int>()
             val validDelimiters = arrayListOf<String>()
 
-
-            if (expression.startsWith(delimiterPrefix) ) { // delimiter change
+            // set delimiter
+            if (expression.startsWith(delimiterPrefix) ) {
                 val delimiter = extractDelimiter(expression)
                 validDelimiters.add(delimiter)
                 newExpression = expression.substring(delimiterPrefix.length + delimiter.length + 1)
-            }else{ // default delimiter
+            }else{
                 validDelimiters.addAll(listOf(",", "\n"))
             }
 
             val numList = newExpression.split(*validDelimiters.toTypedArray())
 
-            // if last element of numList is an empty string, then the last part of the expression is the delimiter
+            // check if expression ends with delimiter
             if(numList.last().isEmpty()) {
                 throw InvalidExpressionException("Expression should not end with delimiters")
             }
@@ -45,20 +45,18 @@ class Calculator {
 
                 if( isNumeric(numList[i] )){
                     val num = numList[i].toInt()
-                    if(num < 0){ //negative number
+
+                    if(num < 0)
                         negativeNums.add(num)
-                    }
-                    sum += num
+                    else if(num < 1000)
+                        sum += num
+
+                    invalidDelimiterPos += numList[i].length
 
                 }else { // check if other delimiter is included
-
-                    // get position of invalid delimiter
-                    for(prev in 0 until i){
-                        invalidDelimiterPos += numList[prev].length
-                    }
-
                     // extract invalid Delimiter
                     var foundInvalid = false
+
                     for(c in numList[i].toCharArray().indices){
                         if( !numList[i][c].isDigit() ){
                             if( !foundInvalid ) foundInvalid = true
@@ -71,6 +69,7 @@ class Calculator {
                 }
             }
 
+            // create error message
             if(negativeNums.isNotEmpty()){
                 // build exception message
                 exceptionMessageBuilder.append("Negative number(s) not allowed : ")
